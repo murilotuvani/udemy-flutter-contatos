@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:contatos/helpers/contact_helper.dart';
 import 'package:flutter/material.dart';
 
+import 'home_page.dart';
+
 class ContactPage extends StatefulWidget {
   final Contact contact;
 
@@ -17,6 +19,8 @@ class _ContactPageState extends State<ContactPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+
+  final _nameFocus = FocusNode();
 
   bool _userEdited = false;
 
@@ -50,7 +54,7 @@ class _ContactPageState extends State<ContactPage> {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: _showHomePage,
         child: Icon(Icons.save),
         backgroundColor: Colors.red,
       ),
@@ -71,6 +75,7 @@ class _ContactPageState extends State<ContactPage> {
             )),
             TextField(
                 controller: _nameController,
+                focusNode: _nameFocus,
                 decoration: InputDecoration(labelText: "Nome"),
                 onChanged: (text) {
                   _userEdited = true;
@@ -88,7 +93,7 @@ class _ContactPageState extends State<ContactPage> {
               keyboardType: TextInputType.emailAddress,
             ),
             TextField(
-              controller: _phoneController,
+                controller: _phoneController,
                 decoration: InputDecoration(labelText: "Telefone"),
                 onChanged: (text) {
                   _userEdited = true;
@@ -99,5 +104,17 @@ class _ContactPageState extends State<ContactPage> {
         ),
       ),
     );
+  }
+
+  void _showHomePage() {
+    // Se o nome nao estiver vazio
+    // volta para tela anterior.
+    if (_editedContact.name != null && _editedContact.name.isNotEmpty) {
+      Navigator.pop(context, _editedContact);
+    } else {
+      // Caso o nome esteja vazio o foco retorna para
+      // o campo de nome
+      FocusScope.of(context).requestFocus(_nameFocus);
+    }
   }
 }

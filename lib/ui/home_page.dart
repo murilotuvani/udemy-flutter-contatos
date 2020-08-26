@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:contatos/helpers/contact_helper.dart';
+import 'package:contatos/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,11 +18,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    helper.getAllContacts().then((list) {
-      setState(() {
-        contacts = list;
-      });
-    });
+    _getAllContacts();
 
 //    Contact c = new Contact();
 //    c.name = "Murilo de Moraes Tuvani";
@@ -46,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: _showContactPage,
         child: Icon(Icons.add),
         backgroundColor: Colors.red,
       ),
@@ -72,23 +69,30 @@ class _HomePageState extends State<HomePage> {
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                        image: contacts[index].img != null ?
-                        FileImage(File(contacts[index].img)) :
-                        AssetImage("images/person.png")
-                    )
-                ),
+                        image: contacts[index].img != null
+                            ? FileImage(File(contacts[index].img))
+                            : AssetImage("images/person.png"))),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(contacts[index].name ?? "", style: TextStyle(
-                        fontSize: 22.0, fontWeight: FontWeight.bold),),
-                    Text(contacts[index].email ?? "", style: TextStyle(
-                        fontSize: 22.0, fontWeight: FontWeight.bold),),
-                    Text(contacts[index].phone ?? "", style: TextStyle(
-                        fontSize: 22.0, fontWeight: FontWeight.bold),)
+                    Text(
+                      contacts[index].name ?? "",
+                      style: TextStyle(
+                          fontSize: 22.0, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      contacts[index].email ?? "",
+                      style: TextStyle(
+                          fontSize: 22.0, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      contacts[index].phone ?? "",
+                      style: TextStyle(
+                          fontSize: 22.0, fontWeight: FontWeight.bold),
+                    )
                   ],
                 ),
               )
@@ -96,6 +100,36 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+      //onTap: _showContactPage(contacts[index]),
+      onTap: () {
+        _showContactPage(contact: contacts[index]);
+      },
     );
+  }
+
+  void _showContactPage({Contact contact}) async {
+    final retContact = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ContactPage(
+                  contact: contact,
+                )));
+
+    if (retContact != null) {
+      if (contact != null) {
+        await helper.updateContact(contact);
+      } else {
+        await helper.saveContact(contact);
+      }
+      _getAllContacts();
+    }
+  }
+
+  void _getAllContacts() {
+    helper.getAllContacts().then((list) {
+      setState(() {
+        contacts = list;
+      });
+    });
   }
 }
