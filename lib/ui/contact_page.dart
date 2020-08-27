@@ -47,6 +47,44 @@ class _ContactPageState extends State<ContactPage> {
 
   @override
   Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: _requestPop,
+      child: buildScaffold(context),
+    );
+  }
+
+  Future<bool> _requestPop() {
+    if (_userEdited) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Descartar alterações?"),
+              content: Text("Se sair as alterações serão perdidas!"),
+              actions: [
+                FlatButton(
+                  child: Text("Cancelar"),
+                  onPressed: () {
+                    Navigator.pop(context); // Sai do dialogo
+                  },
+                ),
+                FlatButton(
+                  child: Text("Confirmar"),
+                  onPressed: () {
+                    Navigator.pop(context); // Sai do dialogo
+                    Navigator.pop(context); // Sai da edicao do contato
+                  },
+                )
+              ],
+            );
+          });
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
+  }
+
+  Widget buildScaffold(context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,

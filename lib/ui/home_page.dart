@@ -102,9 +102,58 @@ class _HomePageState extends State<HomePage> {
       ),
       //onTap: _showContactPage(contacts[index]),
       onTap: () {
-        _showContactPage(contact: contacts[index]);
+        _showOptions(context, index);
       },
     );
+  }
+
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+              onClosing: () {},
+              builder: (context) {
+                return Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    // Para fazer a coluna ocupar o espaco minimo possivel
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: FlatButton(
+                          child: Text("Ligar",
+                              style:
+                                  TextStyle(color: Colors.red, fontSize: 20.0)),
+                          onPressed: () {},
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: FlatButton(
+                          child: Text("Editar",
+                              style:
+                              TextStyle(color: Colors.red, fontSize: 20.0)),
+                          onPressed: () {
+                            _showContactPage(contact: contacts[index]);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: FlatButton(
+                          child: Text("Excluir",
+                              style:
+                              TextStyle(color: Colors.red, fontSize: 20.0)),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              });
+        });
   }
 
   void _showContactPage({Contact contact}) async {
@@ -115,11 +164,13 @@ class _HomePageState extends State<HomePage> {
                   contact: contact,
                 )));
 
+    print("Contato retornado $retContact");
+
     if (retContact != null) {
       if (contact != null) {
-        await helper.updateContact(contact);
+        await helper.updateContact(retContact);
       } else {
-        await helper.saveContact(contact);
+        await helper.saveContact(retContact);
       }
       _getAllContacts();
     }
